@@ -21,6 +21,6 @@ jobs:
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          projectId: horizonfm
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_HORIZONMEDIAS_89644 }}
+          projectId: horizonmedias-89644
           channelId: live
