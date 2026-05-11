@@ -1,0 +1,83 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    
+    function getUserRole(uid) {
+      // Use getAfter if we are in a transaction, but get is fine for normal reads
+      return get(/databases/$(database)/documents/users/$(uid)).data.role;
+    }
+    
+    function userDocExists(uid) {
+      return exists(/databases/$(database)/documents/users/$(uid));
+    }
+
+    // Role helpers
+    function isManager() {
+      // Special case for bootstrapping admins
+      return isSignedIn() && (
+        request.auth.token.email.lower() == 'tamaguette82@gmail.com' ||
+        request.auth.token.email.lower() == 'oumoudiallo@horizonmedias.net' ||
+        (userDocExists(request.auth.uid) && getUserRole(request.auth.uid) == 'manager')
+      );
+    }
+
+    function isRedChef() {
+      return isSignedIn() && (
+        isManager() || 
+        (userDocExists(request.auth.uid) && getUserRole(request.auth.uid) == 'redchef')
+      );
+    }
+
+    function isWriter() {
+      return isSignedIn() && (
+        isRedChef() || 
+        (userDocExists(request.auth.uid) && getUserRole(request.auth.uid) == 'writer')
+      );
+    }
+
+    // --- Validation Helpers ---
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email', 'role']) &&
+             data.uid is string &&
+             data.email is string &&
+             data.role in ['writer', 'redchef', 'manager', 'user'];
+    }
+
+    function isValidArticle(data) {
+      return data.keys().hasAll(['title', 'content', 'status', 'authorId', 'authorName', 'category']) &&
+             data.title is string && data.title.size() <= 1000 &&
+             data.content is string && data.content.size() <= 2000000 &&
+             data.status in ['draft', 'pending', 'published'] &&
+             data.authorId is string &&
+             data.authorName is string &&
+             data.category is string;
+    }
+
+    // --- Collections ---
+
+    // Users
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+
+    // News (Articles)
+    match /news/{newsId} {
+      allow read, write: if true;
+    }
+
+    // Notifications
+    match /notifications/{notificationId} {
+      allow read, write: if true;
+    }
+  }
+}

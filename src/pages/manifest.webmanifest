@@ -1,0 +1,21 @@
+{
+  "name": "Horizon FM",
+  "short_name": "Horizon",
+  "description": "Radio de la démocratie et de l'espoir",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "https://images.unsplash.com/photo-1540226716919-e640d024f997?auto=format&fit=crop&q=80&w=192",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1540226716919-e640d024f997?auto=format&fit=crop&q=80&w=512",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

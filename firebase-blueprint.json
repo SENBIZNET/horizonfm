@@ -1,0 +1,43 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with role management",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["writer", "redchef", "manager"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Article": {
+      "title": "Article",
+      "description": "Article in various stages of publication",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "pending", "published"] },
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "publishedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "content", "status", "authorId", "authorName"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "User account information and roles"
+    },
+    "articles/{articleId}": {
+      "schema": "Article",
+      "description": "Article collection with draft/review/published status"
+    }
+  }
+}
